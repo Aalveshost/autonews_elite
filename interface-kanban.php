@@ -40,7 +40,7 @@ $days = [1 => 'Segunda', 2 => 'Terça', 3 => 'Quarta', 4 => 'Quinta', 5 => 'Sext
 <div class="wrap" style="background: #09090b; color: #fff; padding: 25px; border-radius: 12px; font-family: 'Inter', sans-serif; min-height: 800px;">
     <h1 style="color: #bef264; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between;">
         <div style="display: flex; align-items: center; gap: 15px;">
-            ⚡ AutoNews Elite <span style="font-size: 0.7rem; background: #27272a; color: #a1a1aa; padding: 4px 10px; border-radius: 20px;">v1.4</span>
+            ⚡ AutoNews Elite <span style="font-size: 0.7rem; background: #27272a; color: #a1a1aa; padding: 4px 10px; border-radius: 20px;">v1.5</span>
         </div>
         <button id="btn-test-conn" onclick="testConnection()" style="font-size: 0.8rem; background: #27272a; border: 1px solid #3f3f46; color: #fff; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s;">🔌 Testar Conexão</button>
     </h1>
@@ -66,7 +66,10 @@ $days = [1 => 'Segunda', 2 => 'Terça', 3 => 'Quarta', 4 => 'Quinta', 5 => 'Sext
                             echo "<div class='elite-card' onclick='editSlot($js_data)'>";
                             echo "<strong style='color: #bef264; font-size: 0.85rem;'>[$slot->hour] $cat_name</strong><br>";
                             echo "<span style='color: #888; font-size: 0.7rem; display: block; margin-top: 5px;'>🔍 ".esc_html($slot->search_query)."</span>";
-                            echo "<a href='?page=autonews-elite&delete=$slot->id' style='position:absolute; top:8px; right:8px; color:#ef4444; font-size:0.6rem; text-decoration:none;' onclick='event.stopPropagation();'>✕</a>";
+                            echo "<div style='display:flex; justify-content: space-between; margin-top:10px; align-items:center;'>";
+                            echo "<button onclick='runSlotNow($slot->id, event)' style='background:#bef264; color:#000; border:none; border-radius:4px; font-size:0.6rem; padding:4px 8px; cursor:pointer; font-weight:700;'>▶ Rodar Agora</button>";
+                            echo "<a href='?page=autonews-elite&delete=$slot->id' style='color:#ef4444; font-size:0.65rem; text-decoration:none;' onclick='event.stopPropagation();'>✕ Excluir</a>";
+                            echo "</div>";
                             echo "</div>";
                         }
                     }
@@ -170,6 +173,35 @@ async function testConnection() {
     } finally {
         btn.innerText = originalText;
         btn.disabled = false;
+    }
+}
+
+async function runSlotNow(id, event) {
+    event.stopPropagation();
+    Swal.fire({
+        title: 'Gerando Notícia...',
+        text: 'Isso pode levar até 60 segundos.',
+        allowOutsideClick: false,
+        didOpen: () => { Swal.showLoading(); },
+        customClass: { popup: 'swal2-popup-dark' }
+    });
+
+    try {
+        const formData = new FormData();
+        formData.append('action', 'run_autonews_slot');
+        formData.append('slot_id', id);
+
+        const response = await fetch(ajaxurl, { method: 'POST', body: formData });
+        const result = await response.json();
+
+        if (result.success) {
+            Swal.fire({ icon: 'success', title: 'Sucesso!', text: result.data.message, customClass: { popup: 'swal2-popup-dark' } });
+            loadLogs(1);
+        } else {
+            Swal.fire({ icon: 'error', title: 'Falha', text: result.data.message, customClass: { popup: 'swal2-popup-dark' } });
+        }
+    } catch (e) {
+        Swal.fire({ icon: 'error', title: 'Erro', text: e.message, customClass: { popup: 'swal2-popup-dark' } });
     }
 }
 

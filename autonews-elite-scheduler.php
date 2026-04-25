@@ -2,16 +2,37 @@
 /**
  * Plugin Name: AutoNews Elite Scheduler
  * Description: Agendador Editorial Inteligente com Kanban de 7 dias e Automação via IA.
- * Version: 1.4.0
+ * Version: 1.5.0
  * Author: AutoNews Elite Team
  */
 
 if (!defined('ABSPATH')) exit;
 
-// 1. CRIAÇÃO DAS TABELAS
-// ... (rest of activation hook) ...
+// ... (tabelas e menus) ...
 
-// 6. AJAX PARA TESTE DE CONEXÃO
+// 7. AJAX PARA "RODAR AGORA"
+add_action('wp_ajax_run_autonews_slot', 'autonews_elite_ajax_run_slot');
+function autonews_elite_ajax_run_slot() {
+    global $wpdb;
+    $slot_id = intval($_POST['slot_id']);
+    $slot = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$wpdb->prefix}autonews_slots WHERE id = %d", $slot_id));
+    
+    if ($slot) {
+        require_once plugin_dir_path(__FILE__) . 'engine-api.php';
+        autonews_elite_trigger_api($slot);
+        $wpdb->update($wpdb->prefix . 'autonews_slots', ['last_run' => current_time('mysql')], ['id' => $slot_id]);
+        wp_send_json_success(['message' => 'Post gerado com sucesso!']);
+    }
+    wp_send_json_error(['message' => 'Slot não encontrado.']);
+}
+
+// 8. AUTO-CHECK AO CARREGAR O PAINEL
+add_action('admin_init', 'autonews_elite_force_check');
+function autonews_elite_force_check() {
+    if (isset($_GET['page']) && $_GET['page'] == 'autonews-elite') {
+        autonews_elite_process_queue();
+    }
+}
 add_action('wp_ajax_test_autonews_connection', 'autonews_elite_ajax_test_conn');
 function autonews_elite_ajax_test_conn() {
     $api_url = 'http://86.48.18.19:5000/api/auth-check';
