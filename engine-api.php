@@ -27,9 +27,10 @@ function autonews_elite_trigger_api($slot) {
         return;
     }
 
-    $data = json_decode(wp_remote_retrieve_body($response));
+    $response_body = wp_remote_retrieve_body($response);
+    $data = json_decode($response_body);
     
-    if ($data && $data->success) {
+    if ($data && isset($data->success) && $data->success) {
         $post_id = wp_insert_post([
             'post_title'    => $data->title,
             'post_content'  => $data->content,
@@ -44,7 +45,13 @@ function autonews_elite_trigger_api($slot) {
 
         $wpdb->insert($table_logs, ['title' => $data->title, 'status' => 'success', 'post_id' => $post_id]);
     } else {
-        $wpdb->insert($table_logs, ['title' => 'ERRO: Resposta inválida da API', 'status' => 'error']);
+        $error_msg = 'ERRO: Resposta Inválida';
+        if ($data && isset($data->error)) {
+            $error_msg = 'ERRO API: ' . $data->error;
+        } elseif (!empty($response_body)) {
+            $error_msg = 'ERRO BRUTO: ' . substr(strip_tags($response_body), 0, 200);
+        }
+        $wpdb->insert($table_logs, ['title' => $error_msg, 'status' => 'error']);
     }
 }
 
