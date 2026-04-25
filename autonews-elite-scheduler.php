@@ -2,7 +2,7 @@
 /**
  * Plugin Name: AutoNews Elite Scheduler
  * Description: Agendador Editorial Inteligente com Kanban de 7 dias e Automação via IA.
- * Version: 1.5.1
+ * Version: 1.5.2
  * Author: AutoNews Elite Team
  */
 
@@ -100,6 +100,13 @@ function autonews_elite_ajax_logs() {
     $total = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}autonews_logs");
 
     wp_send_json_success(['logs' => $logs, 'total' => $total, 'pages' => ceil($total / $per_page)]);
+}
+
+add_action('wp_ajax_clear_autonews_logs', 'autonews_elite_clear_logs');
+function autonews_elite_clear_logs() {
+    global $wpdb;
+    $wpdb->query("TRUNCATE TABLE {$wpdb->prefix}autonews_logs");
+    wp_send_json_success(['message' => 'Logs limpos com sucesso.']);
 }
 
 // 2. MENU NO ADMIN

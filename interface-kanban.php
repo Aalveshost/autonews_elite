@@ -84,7 +84,10 @@ $days = [1 => 'Segunda', 2 => 'Terça', 3 => 'Quarta', 4 => 'Quinta', 5 => 'Sext
     <div style="margin-top: 50px; background: #18181b; padding: 25px; border-radius: 12px; border: 1px solid #27272a;">
         <h2 style="color: #fff; margin-bottom: 20px; font-size: 1.2rem; display: flex; align-items: center; justify-content: space-between;">
             📋 Log de Execuções Recentes
-            <button onclick="loadLogs(1)" style="font-size: 0.7rem; background: transparent; border: 1px solid #27272a; color: #a1a1aa; padding: 5px 12px; border-radius: 5px; cursor: pointer;">🔄 Atualizar Log</button>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="clearLogs()" style="font-size: 0.7rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; padding: 5px 12px; border-radius: 5px; cursor: pointer; transition: 0.2s;">🗑️ Limpar Logs</button>
+                <button onclick="loadLogs(1)" style="font-size: 0.7rem; background: transparent; border: 1px solid #27272a; color: #a1a1aa; padding: 5px 12px; border-radius: 5px; cursor: pointer;">🔄 Atualizar Log</button>
+            </div>
         </h2>
         <div id="log-container">
             <table class="log-table">
@@ -234,6 +237,21 @@ async function loadLogs(page = 1) {
                 pagHtml += `<button onclick="loadLogs(${i})" style="border:none; padding:5px 10px; border-radius:4px; cursor:pointer; ${active}">${i}</button>`;
             }
             pagination.innerHTML = pagHtml;
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function clearLogs() {
+    if (!confirm('Deseja realmente limpar todos os logs? Esta ação não pode ser desfeita.')) return;
+    
+    try {
+        const formData = new FormData();
+        formData.append('action', 'clear_autonews_logs');
+        const response = await fetch(ajaxurl, { method: 'POST', body: formData });
+        const result = await response.json();
+        if (result.success) {
+            Swal.fire({ icon: 'success', title: 'Logs Limpos!', customClass: { popup: 'swal2-popup-dark' }, timer: 1500 });
+            loadLogs(1);
         }
     } catch (e) { console.error(e); }
 }
