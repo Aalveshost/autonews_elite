@@ -40,7 +40,7 @@ $days = [1 => 'Segunda', 2 => 'Terça', 3 => 'Quarta', 4 => 'Quinta', 5 => 'Sext
 <div class="wrap" style="background: #09090b; color: #fff; padding: 25px; border-radius: 12px; font-family: 'Inter', sans-serif; min-height: 800px;">
     <h1 style="color: #bef264; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between;">
         <div style="display: flex; align-items: center; gap: 15px;">
-            ⚡ AutoNews Elite <span style="font-size: 0.7rem; background: #27272a; color: #a1a1aa; padding: 4px 10px; border-radius: 20px;">v1.5</span>
+            ⚡ AutoNews Elite <span style="font-size: 0.7rem; background: #27272a; color: #a1a1aa; padding: 4px 10px; border-radius: 20px;">v1.5.1</span>
         </div>
         <button id="btn-test-conn" onclick="testConnection()" style="font-size: 0.8rem; background: #27272a; border: 1px solid #3f3f46; color: #fff; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s;">🔌 Testar Conexão</button>
     </h1>
