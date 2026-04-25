@@ -14,7 +14,10 @@ function autonews_elite_trigger_api($slot) {
     ];
 
     $response = wp_remote_post($api_url, [
-        'headers' => ['Content-Type' => 'application/json'],
+        'headers' => [
+            'Content-Type' => 'application/json',
+            'X-Site-URL'   => get_site_url()
+        ],
         'body'    => json_encode($body),
         'timeout' => 60
     ]);

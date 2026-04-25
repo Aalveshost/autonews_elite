@@ -2,7 +2,7 @@
 /**
  * Plugin Name: AutoNews Elite Scheduler
  * Description: Agendador Editorial Inteligente com Kanban de 7 dias e Automação via IA.
- * Version: 1.3.0
+ * Version: 1.4.0
  * Author: AutoNews Elite Team
  */
 
@@ -15,7 +15,12 @@ if (!defined('ABSPATH')) exit;
 add_action('wp_ajax_test_autonews_connection', 'autonews_elite_ajax_test_conn');
 function autonews_elite_ajax_test_conn() {
     $api_url = 'http://86.48.18.19:5000/api/auth-check';
-    $response = wp_remote_get($api_url, ['timeout' => 15]);
+    $response = wp_remote_get($api_url, [
+        'timeout' => 15,
+        'headers' => [
+            'X-Site-URL' => get_site_url()
+        ]
+    ]);
 
     if (is_wp_error($response)) {
         wp_send_json_error(['message' => 'Erro de Rede: ' . $response->get_error_message()]);
