@@ -2,7 +2,7 @@
 /**
  * Plugin Name: AutoNews Elite Scheduler
  * Description: Agendador Editorial Inteligente com Kanban de 7 dias e Automação via IA.
- * Version: 1.5.3
+ * Version: 1.5.4
  * Author: AutoNews Elite Team
  */
 
