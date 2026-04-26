@@ -40,7 +40,7 @@ $days = [1 => 'Segunda', 2 => 'Terça', 3 => 'Quarta', 4 => 'Quinta', 5 => 'Sext
 <div class="wrap" style="background: #09090b; color: #fff; padding: 25px; border-radius: 12px; font-family: 'Inter', sans-serif; min-height: 800px;">
     <h1 style="color: #bef264; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between;">
         <div style="display: flex; align-items: center; gap: 15px;">
-            ⚡ AutoNews Elite <span style="font-size: 0.7rem; background: #27272a; color: #a1a1aa; padding: 4px 10px; border-radius: 20px;">v1.5.4</span>
+            ⚡ AutoNews Elite <span style="font-size: 0.7rem; background: #27272a; color: #a1a1aa; padding: 4px 10px; border-radius: 20px;">v1.5.5</span>
         </div>
         <button id="btn-test-conn" onclick="testConnection()" style="font-size: 0.8rem; background: #27272a; border: 1px solid #3f3f46; color: #fff; padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: 0.3s;">🔌 Testar Conexão</button>
     </h1>
@@ -50,8 +50,9 @@ $days = [1 => 'Segunda', 2 => 'Terça', 3 => 'Quarta', 4 => 'Quinta', 5 => 'Sext
     <style>
         .swal2-popup-dark { background: #18181b !important; color: #fff !important; border: 1px solid #27272a !important; }
         .swal2-title, .swal2-html-container { color: #fff !important; }
-        .kanban-scroll { overflow-x: auto; padding-bottom: 20px; }
-        .kanban-grid { display: grid; grid-template-columns: repeat(7, minmax(200px, 1fr)); gap: 15px; min-width: 1400px; }
+        .kanban-scroll { overflow-x: auto; padding-bottom: 20px; cursor: grab; }
+        .kanban-scroll:active { cursor: grabbing; }
+        .kanban-grid { display: grid; grid-template-columns: repeat(7, minmax(250px, 1fr)); gap: 15px; min-width: 1750px; user-select: none; }
         /* Custom Scrollbar */
         .kanban-scroll::-webkit-scrollbar { height: 8px; }
         .kanban-scroll::-webkit-scrollbar-track { background: #09090b; }
@@ -59,7 +60,7 @@ $days = [1 => 'Segunda', 2 => 'Terça', 3 => 'Quarta', 4 => 'Quinta', 5 => 'Sext
         .kanban-scroll::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
     </style>
 
-    <div class="kanban-scroll">
+    <div class="kanban-scroll" id="kanbanScroll">
         <div class="kanban-grid">
             <?php foreach ($days as $num => $label): ?>
                 <div style="background: #18181b; border-radius: 10px; padding: 15px; border: 1px solid #27272a;">
@@ -268,4 +269,27 @@ async function clearLogs() {
 // Carregar logs ao abrir e a cada 60 segundos
 loadLogs(1);
 setInterval(() => loadLogs(1), 60000);
+
+// Lógica de Arraste (Grab to Scroll)
+const slider = document.getElementById('kanbanScroll');
+let isDown = false;
+let startX;
+let scrollLeft;
+
+slider.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.elite-card') || e.target.tagName === 'BUTTON') return;
+    isDown = true;
+    slider.classList.add('active');
+    startX = e.pageX - slider.offsetLeft;
+    scrollLeft = slider.scrollLeft;
+});
+slider.addEventListener('mouseleave', () => { isDown = false; });
+slider.addEventListener('mouseup', () => { isDown = false; });
+slider.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 2; // Velocidade do scroll
+    slider.scrollLeft = scrollLeft - walk;
+});
 </script>
